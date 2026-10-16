@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora de interés compuesto</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#14181f;--mu:#5d6675;--bd:#e2e6ec;--c1:#2f6fed;--c2:#e08a00;--wr:#fff6e0;--wrb:#f0cf85;--wrt:#6b4500;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1217;--card:#181d25;--tx:#eef1f6;--mu:#9aa4b4;--bd:#2a313c;--c1:#6b9bff;--c2:#ffb23e;--wr:#2a2212;--wrb:#5c4817;--wrt:#f3d9a0}}
+:root[data-theme="dark"]{--bg:#0f1217;--card:#181d25;--tx:#eef1f6;--mu:#9aa4b4;--bd:#2a313c;--c1:#6b9bff;--c2:#ffb23e;--wr:#2a2212;--wrb:#5c4817;--wrt:#f3d9a0}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
+main{max-width:720px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.4rem;margin:0 0 4px}
+.sub{color:var(--mu);margin:0 0 16px;font-size:.95rem}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.ctl{margin-bottom:18px}.ctl:last-of-type{margin-bottom:0}
+.row{display:flex;flex-direction:column;gap:6px;margin-bottom:2px}
+.row label{font-size:.95rem;color:var(--mu)}
+.row output{font-weight:700;font-size:1.1rem;font-variant-numeric:tabular-nums}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;margin:0;background:transparent;touch-action:pan-y;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--bd)}
+input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:var(--bd)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-10px;border-radius:50%;background:var(--c1);border:3px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--c1);border:3px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.fld{display:flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:10px;padding:0 12px;min-height:46px;background:var(--bg);width:100%}.fld:focus-within{border-color:var(--c1);box-shadow:0 0 0 2px color-mix(in srgb,var(--c1) 30%,transparent)}.fld input{border:0;background:transparent;color:var(--tx);font:inherit;font-weight:700;font-size:1.2rem;flex:1;width:100%;min-width:0;padding:10px 0;text-align:left;outline:0;font-variant-numeric:tabular-nums}.fld span{color:var(--mu);font-weight:600;white-space:nowrap}
+.warn{background:var(--wr);border:1px solid var(--wrb);color:var(--wrt);border-radius:10px;padding:10px 12px;font-size:.88rem;margin-top:14px}
+.sw{display:flex;align-items:center;gap:10px;min-height:44px;font-size:.95rem;cursor:pointer}.sw input{width:22px;height:22px;accent-color:var(--c1);flex:none}
+[hidden]{display:none!important}
+.big{font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums;word-break:break-word}
+.lbl{color:var(--mu);font-size:.9rem}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.box{border:1px solid var(--bd);border-radius:10px;padding:10px}
+.box b{display:block;font-size:1.05rem;font-variant-numeric:tabular-nums;word-break:break-word}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-top:14px;background:var(--bd)}
+.bar i{display:block;height:100%;transition:width .25s}
+svg{width:100%;height:auto;display:block;touch-action:pan-y}
+.axis{fill:var(--mu);font-size:11px}
+.read{font-size:.88rem;color:var(--mu);min-height:2.6em;margin-top:6px;font-variant-numeric:tabular-nums}
+.read b{color:var(--tx)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.88rem;color:var(--mu);margin-bottom:8px}
+.cross .big{color:var(--c2)}
+h2{font-size:1rem;margin:0 0 10px}
+footer{font-size:.8rem;color:var(--mu)}
+.explain{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-top:10px;font-size:.88rem;color:var(--mu)}.explain b{color:var(--tx)}.explain p{margin:6px 0 0}.explain h3{margin:0;font-size:.95rem;color:var(--tx)}
+.hl{margin-top:14px;padding:10px 12px;border-radius:10px;border:1px solid var(--bd);font-size:.95rem}.hl p{margin:6px 0 0;color:var(--mu);font-size:.85rem}
+.about p{margin:0 0 8px;font-size:.9rem;color:var(--mu)}.about p:last-child{margin:0}.about b{color:var(--tx)}
+</style>
+</head>
+<body>
+<main>
+<h1>Calculadora de interés compuesto</h1>
+<p class="sub">Mové los controles y mirá cómo crece tu plata en pesos argentinos.</p>
+
+<section class="card" aria-label="Controles">
+  <div class="ctl"><div class="row"><label for="p0">Ahorro actual para empezar</label><span class="fld"><span>$</span><input type="text" inputmode="numeric" id="n0" autocomplete="off" enterkeyhint="done" aria-label="Ahorro actual en pesos"></span></div>
+    <input type="range" id="p0" min="0" max="50000000" step="1000" value="1000000"></div>
+  <div class="ctl"><div class="row"><label for="pm">Aporte cada mes</label><span class="fld"><span>$</span><input type="text" inputmode="numeric" id="nm" autocomplete="off" enterkeyhint="done" aria-label="Aporte mensual en pesos"></span></div>
+    <input type="range" id="pm" min="0" max="2000000" step="1000" value="100000"></div>
+  <div class="ctl"><div class="row"><label for="yr">Años que lo dejo invertido</label><span class="fld"><input type="text" inputmode="numeric" id="ny" autocomplete="off" enterkeyhint="done" aria-label="Años"><span>años</span></span></div>
+    <input type="range" id="yr" min="1" max="40" step="1" value="15"></div>
+  <div class="ctl"><div class="row"><label for="rt">Rendimiento anual que supongo</label><span class="fld"><input type="text" inputmode="decimal" id="nr" autocomplete="off" enterkeyhint="done" aria-label="Rendimiento anual en porcentaje"><span>% anual</span></span></div>
+    <input type="range" id="rt" min="0" max="100" step="0.5" value="30"></div>
+  <div class="ctl"><label class="sw"><input type="checkbox" id="rl"><span>Ver en pesos de hoy (descontando inflación)</span></label>
+    <div class="explain">
+      <h3>¿Por qué la inflación se come tu ganancia?</h3>
+      <p>El interés te dice cuántos pesos más vas a tener. La inflación te dice cuánto menos compra cada peso. Lo que importa es cuánto vas a poder comprar al final.</p>
+      <p><b>Ejemplo:</b> ponés $100 y rinden 30 % en un año, así que terminás con $130. Pero si los precios subieron 25 %, lo que antes costaba $100 ahora cuesta $125. Con tus $130 comprás apenas un 4 % más que antes, no un 30 %.</p>
+      <p>Si la inflación es más alta que el rendimiento (por ejemplo 40 %), tus $130 compran menos que tus $100 de antes: ganaste pesos, pero perdiste poder de compra.</p>
+      <p>Por eso, al activar esta opción la calculadora muestra todo en <b>pesos de hoy</b>, descontando mes a mes la inflación que supongas.</p>
+    </div></div>
+  <div class="ctl" id="infc" hidden><div class="row"><label for="inf">Inflación anual que supongo</label><span class="fld"><input type="text" inputmode="decimal" id="ni" autocomplete="off" enterkeyhint="done" aria-label="Inflación anual en porcentaje"><span>% anual</span></span></div>
+    <input type="range" id="inf" min="0" max="100" step="0.5" value="25"></div>
+  <div class="warn" id="wn"><b>Ojo:</b> el rendimiento es un <b>supuesto que elegís vos</b>, no una garantía ni una promesa. Lo real puede ser mayor, menor o incluso negativo. Los montos son nominales (en pesos de cada momento, sin descontar inflación).</div>
+</section>
+
+<section class="card" aria-live="polite">
+  <div class="lbl" id="tl">Al final tendrías (según tu supuesto)</div>
+  <div class="big" id="tot"></div>
+  <div class="split">
+    <div class="box"><div class="lbl"><span class="dot" style="background:var(--c1)"></span>Puesto por vos</div><b id="cb"></b><span class="lbl" id="cp"></span></div>
+    <div class="box"><div class="lbl"><span class="dot" style="background:var(--c2)"></span><span id="il">Generado por intereses</span></div><b id="ib"></b><span class="lbl" id="ip"></span></div>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="bc" style="background:var(--c1)"></i><i id="bi" style="background:var(--c2)"></i></div>
+</section>
+
+<section class="card">
+  <h2>Cómo crece con el tiempo</h2>
+  <div class="legend"><span><span class="dot" style="background:var(--c1)"></span>Lo que aportás</span><span><span class="dot" style="background:var(--c2)"></span>Intereses acumulados</span></div>
+  <svg id="ch" viewBox="0 0 600 300" role="img" aria-label="Gráfico de aportes e intereses a lo largo de los años"></svg>
+  <div class="read" id="rd"></div>
+</section>
+
+<section class="card cross">
+  <div class="lbl">Los intereses superan a tus aportes en el…</div>
+  <div class="big" id="cx"></div>
+  <div class="lbl" id="cxs"></div>
+</section>
+
+<section class="card">
+  <h2>¿Y si empiezo más tarde?</h2>
+  <p class="lbl" style="margin:0 0 12px">Mismo aporte mensual, mismo rendimiento y misma fecha final. Si esperás, tu ahorro inicial queda guardado sin rendir hasta que empieces.</p>
+  <div id="kb">
+    <div class="split" style="margin-top:0">
+      <div class="box"><div class="lbl">Empiezo hoy</div><b id="kA"></b><span class="lbl" id="kAs"></span></div>
+      <div class="box"><div class="lbl">Empiezo en 5 años</div><b id="kB"></b><span class="lbl" id="kBs"></span></div>
+    </div>
+    <div class="lbl" style="margin-top:14px">Hoy</div>
+    <div class="bar" style="margin-top:4px" aria-hidden="true"><i id="kAc" style="background:var(--c1)"></i><i id="kAi" style="background:var(--c2)"></i></div>
+    <div class="lbl" style="margin-top:10px">En 5 años</div>
+    <div class="bar" style="margin-top:4px" aria-hidden="true"><i id="kBc" style="background:var(--c1)"></i><i id="kBi" style="background:var(--c2)"></i></div>
+    <div class="legend" style="margin:8px 0 0"><span><span class="dot" style="background:var(--c1)"></span>Lo que ponés</span><span><span class="dot" style="background:var(--c2)"></span>Intereses</span></div>
+    <div class="hl" id="kD"></div>
+  </div>
+  <p class="lbl" id="km" hidden>Elegí más de 5 años de inversión para poder comparar.</p>
+</section>
+
+<section class="card about">
+  <h2>Sobre este proyecto</h2>
+  <p><b>Qué resuelve:</b> una calculadora de interés compuesto pensada para ahorristas en Argentina: en pesos, con controles que se manejan con el dedo y un resultado que separa lo que ponés vos de lo que generan los intereses.</p>
+  <p><b>Decisiones:</b> el rendimiento y la inflación los elegís vos y se muestran como supuestos, no como promesas. El cálculo capitaliza por mes y suma los aportes a fin de cada mes. El modo “pesos de hoy” descuenta la inflación para mostrar cuánto poder de compra tendría ese dinero.</p>
+  <p><b>Qué quedó afuera:</b> impuestos, comisiones, aportes que se actualicen con la inflación y rendimientos distintos cada año.</p>
+</section>
+
+<footer>Cálculo con capitalización mensual: el rendimiento anual se convierte en su equivalente mensual y los aportes se suman a fin de cada mes. Es una simulación con fines ilustrativos, no asesoramiento financiero.</footer>
+</main>
+<script>
+(function(){try{
+const $=id=>document.getElementById(id);
+const ars=new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0});
+const num=(v,d=0)=>v.toLocaleString('es-AR',{maximumFractionDigits:d});
+const short=v=>v>=1e6?'$ '+num(v/1e6,1)+' M':v>=1e3?'$ '+num(v/1e3)+' mil':'$ '+num(v);
+const NS='http://www.w3.org/2000/svg';
+let S=null,pend=false;
+
+function sim(p0,pm,yrs,r,f,o){
+  o=o||0;const mr=Math.pow(1+r,1/12)-1,mf=Math.pow(1+f,1/12)-1;const d0=Math.pow(1+mf,o);let bal=p0,c=p0/d0,cross=null;const pts=[{m:0,c:c,i:0}];
+  for(let m=1;m<=yrs*12;m++){const d=Math.pow(1+mf,m+o);bal=bal*(1+mr)+pm;c+=pm/d;const i=bal/d-c;pts.push({m,c,i});
+    if(cross===null&&i>c+0.5&&i>0)cross=m;}
+  return {pts,cross};
+}
+function nice(max){const p=Math.pow(10,Math.floor(Math.log10(max)));const f=max/p;const n=f<=1?1:f<=2?2:f<=5?5:10;return n*p;}
+
+function update(){
+  const p0=V.p0,pm=V.pm,yrs=V.yr,rt=V.rt;
+  const rl=V.real;const {pts,cross}=sim(p0,pm,yrs,rt/100,rl?V.inf/100:0);S={pts,cross,yrs};
+  $('tl').textContent=rl?'Al final tendrías, en pesos de hoy (según tus supuestos)':'Al final tendrías (según tu supuesto)';
+  $('il').textContent=rl?'Ganancia real (intereses menos inflación)':'Generado por intereses';
+  $('wn').innerHTML=rl?'<b>Ojo:</b> el rendimiento y la inflación son <b>supuestos que elegís vos</b>, no garantías ni promesas: la inflación real puede ser muy distinta. Los montos están en pesos de hoy, ajustados por la inflación que supongas.':NOM;
+  const L=pts[pts.length-1],tot=L.c+L.i;
+  $('tot').textContent=ars.format(tot);
+  $('cb').textContent=ars.format(L.c);$('ib').textContent=ars.format(L.i);
+  const pc=tot>0?L.c/tot*100:0;
+  $('cp').textContent=num(pc,1)+' % del total';$('ip').textContent=num(100-pc,1)+' % del total';
+  const pq=Math.min(100,Math.max(0,pc));$('bc').style.width=pq+'%';$('bi').style.width=(tot>0?100-pq:0)+'%';
+  if(cross!==null){
+    const y=Math.floor(cross/12),mo=cross%12;
+    $('cx').textContent='Año '+Math.ceil(cross/12);
+    $('cxs').textContent='Pasa a los '+(y>0?y+(y===1?' año':' años'):'')+(y>0&&mo>0?' y ':'')+(mo>0?mo+(mo===1?' mes':' meses'):'')+'. Desde ahí, los intereses acumulados son más que todo lo que pusiste de tu bolsillo.';
+  }else{
+    $('cx').textContent='No en este plazo';
+    $('cxs').textContent='Con estos valores, los intereses no llegan a superar tus aportes dentro de los '+yrs+(yrs===1?' año':' años')+' elegidos. Probá con más años o más rendimiento.';
+  }
+  const D=5;$('kb').hidden=yrs<=D;$('km').hidden=yrs>D;
+  if(yrs>D){
+    const Lb=sim(p0,pm,yrs-D,rt/100,rl?V.inf/100:0,D*12).pts.slice(-1)[0];
+    const tb=Lb.c+Lb.i,mx=Math.max(tot,tb,1),dif=tot-tb;
+    $('kA').textContent=ars.format(tot);$('kB').textContent=ars.format(tb);
+    $('kAs').textContent='Ponés '+ars.format(L.c)+' de tu bolsillo';
+    $('kBs').textContent='Ponés '+ars.format(Lb.c)+' de tu bolsillo';
+    const w=x=>Math.max(0,x/mx*100)+'%';
+    $('kAc').style.width=w(L.c);$('kAi').style.width=w(L.i);$('kBc').style.width=w(Lb.c);$('kBi').style.width=w(Lb.i);
+    const di=L.i-Lb.i;$('kD').innerHTML=dif>=0?'Esperar '+D+' años te deja con <b>'+ars.format(dif)+' menos</b> ('+num(tot>0?dif/tot*100:0,0)+' % menos).<p>'+(di>=0?'De esa diferencia, '+ars.format(L.c-Lb.c)+' son aportes que no ponés y '+ars.format(di)+' son intereses que no ganás.':'Con estos supuestos el rendimiento no le gana a la inflación: la diferencia sale de los '+ars.format(L.c-Lb.c)+' que ponés de más, y esa plata pierde poder de compra.')+'</p>':'Con estos supuestos, esperar '+D+' años te deja con <b>'+ars.format(-dif)+' más</b>: el rendimiento no le gana a la inflación, así que invertir más tiempo hace perder poder de compra.';
+  }
+  if(!pend){pend=true;requestAnimationFrame(()=>{pend=false;draw();readout(S.pts.length-1);});}
+}
+
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;}
+const W=600,H=300,ml=58,mr=10,mt=12,mb=28,iw=W-ml-mr,ih=H-mt-mb;
+function draw(){
+  const {pts,cross,yrs}=S,svg=$('ch');svg.innerHTML='';
+  const max=Math.max(...pts.map(p=>p.c+p.i),1),top=nice(max);
+  const X=m=>ml+m/(yrs*12)*iw,Y=v=>mt+ih-v/top*ih;
+  const css=getComputedStyle(document.documentElement);
+  const c1=css.getPropertyValue('--c1').trim(),c2=css.getPropertyValue('--c2').trim(),bd=css.getPropertyValue('--bd').trim(),tx=css.getPropertyValue('--tx').trim();
+  for(let k=0;k<=4;k++){const v=top*k/4,y=Y(v);
+    el('line',{x1:ml,x2:W-mr,y1:y,y2:y,stroke:bd,'stroke-width':1},svg);
+    const t=el('text',{x:ml-6,y:y+4,'text-anchor':'end',class:'axis'},svg);t.textContent=short(v);}
+  const step=yrs<=10?1:yrs<=20?2:yrs<=30?5:5;
+  for(let a=0;a<=yrs;a+=step){const t=el('text',{x:X(a*12),y:H-8,'text-anchor':a===0?'start':'middle',class:'axis'},svg);t.textContent=a;}
+  const tl=el('text',{x:W-mr,y:H-8,'text-anchor':'end',class:'axis'},svg);tl.textContent='años';
+  let d1='M'+X(0)+','+Y(0),d2='';
+  pts.forEach(p=>{d1+=' L'+X(p.m).toFixed(1)+','+Y(p.c).toFixed(1);});
+  d1+=' L'+X(yrs*12)+','+Y(0)+' Z';
+  el('path',{d:d1,fill:c1,opacity:.9},svg);
+  d2='M'+pts.map(p=>X(p.m).toFixed(1)+','+Y(p.c+p.i).toFixed(1)).join(' L')+' L'+pts.slice().reverse().map(p=>X(p.m).toFixed(1)+','+Y(p.c).toFixed(1)).join(' L')+' Z';
+  el('path',{d:d2,fill:c2,opacity:.9},svg);
+  if(cross!==null){const x=X(cross);
+    el('line',{x1:x,x2:x,y1:mt,y2:mt+ih,stroke:tx,'stroke-width':1.5,'stroke-dasharray':'4 3'},svg);
+    const right=x>W*0.7;
+    const t=el('text',{x:right?x-5:x+5,y:mt+12,'text-anchor':right?'end':'start','font-size':12,'font-weight':700,fill:tx},svg);
+    t.textContent='Año '+Math.ceil(cross/12)+': intereses > aportes';}
+  el('line',{id:'cur',x1:0,x2:0,y1:mt,y2:mt+ih,stroke:tx,'stroke-width':1,opacity:0},svg);
+}
+function readout(idx){
+  const p=S.pts[idx],y=Math.floor(p.m/12),mo=p.m%12;
+  const when=p.m===0?'Hoy':(y>0?y+(y===1?' año':' años'):'')+(y>0&&mo>0?' y ':'')+(mo>0?mo+(mo===1?' mes':' meses'):'');
+  $('rd').innerHTML='<b>'+when+'</b> · Aportes: '+ars.format(p.c)+' · Intereses: '+ars.format(p.i)+' · Total: <b>'+ars.format(p.c+p.i)+'</b>';
+}
+function move(e){
+  const r=$('ch').getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W;
+  let f=(x-ml)/iw;f=Math.max(0,Math.min(1,f));
+  const idx=Math.round(f*S.yrs*12);readout(idx);
+  const c=$('cur');if(c){const px=ml+idx/(S.yrs*12)*iw;c.setAttribute('x1',px);c.setAttribute('x2',px);c.setAttribute('opacity',.6);}
+}
+$('ch').addEventListener('pointermove',move);
+$('ch').addEventListener('pointerdown',move);
+const V={p0:1000000,pm:100000,yr:15,rt:30,inf:25,real:false};
+const N={p0:'n0',pm:'nm',yr:'ny',rt:'nr',inf:'ni'};
+const LIM={p0:[0,1e11],pm:[0,1e9],yr:[1,60],rt:[0,999],inf:[0,999]};
+const show=k=>{$(N[k]).value=num(V[k],(k==='rt'||k==='inf')?1:0);};
+['p0','pm','yr','rt','inf'].forEach(k=>{
+  const s=$(k),n=$(N[k]);
+  s.addEventListener('input',()=>{V[k]=+s.value;show(k);update();});
+  n.addEventListener('input',()=>{
+    const dec=(k==='rt'||k==='inf');const raw=dec?n.value.replace(',','.').replace(/[^0-9.]/g,''):n.value.replace(/\D/g,'');
+    if(raw===''||isNaN(parseFloat(raw)))return;
+    let v=dec?parseFloat(raw):parseInt(raw,10);
+    v=Math.min(LIM[k][1],Math.max(LIM[k][0],v));
+    V[k]=v;s.value=v;update();
+  });
+  n.addEventListener('focus',()=>setTimeout(()=>n.select(),0));
+  n.addEventListener('blur',()=>show(k));
+  n.addEventListener('keydown',e=>{if(e.key==='Enter')n.blur();});
+  show(k);
+});
+const NOM=$('wn').innerHTML;
+$('rl').addEventListener('change',()=>{V.real=$('rl').checked;$('infc').hidden=!V.real;update();});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>S&&draw());
+update();
+}catch(e){var b=document.createElement('div');b.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:99;background:#b00020;color:#fff;padding:10px;font:12px monospace;border-radius:8px';b.textContent='Error: '+(e&&e.message?e.message:e);document.body.appendChild(b);}
+})();
+</script>
+</body>
+</html>
